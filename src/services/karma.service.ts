@@ -173,19 +173,27 @@ export class KarmaService {
     return userIndex !== -1 ? userIndex + 1 : null;
   }
 
-  // Метод для проверки целостности транзакций пользователя
+  // Метод для проверки целостности транзакций пользователя и баланса
   async verifyTransactionIntegrity(userId: string): Promise<boolean> {
     const transactions = await this.getUserTransactions(userId, 'ASC');
     let previousHash = '';
+    let calculatedBalance = 0;
 
     for (const transaction of transactions) {
       const recalculatedHash = this.generateHash(transaction, previousHash);
 
       if (recalculatedHash !== transaction.currentHash) {
-        return false; // Нарушение целостности
+        return false; // Нарушение целостности хеша
       }
 
+      calculatedBalance += transaction.amount;
       previousHash = transaction.currentHash;
+    }
+
+    // Проверка соответствия текущего баланса расчетному
+    const currentKarma = await this.getUserKarma(userId);
+    if (currentKarma.balance !== calculatedBalance) {
+      return false; // Несоответствие баланса
     }
 
     return true; // Целостность подтверждена
