@@ -6,16 +6,24 @@ export class TopKarmaCommand extends SlackCommandHandler {
     return `/karma_${KarmaCommands.Top}`;
   }
 
-  async handle(): Promise<string> {
-    return this.getTop();
+  async handle(command: any): Promise<string> {
+    return this.getTop(command.user_id);
   }
 
-  private async getTop(): Promise<string> {
+  private async getTop(currentUserId: string): Promise<string> {
     const leaderboard = await this.karmaService.getLeaderboard();
-    const text = leaderboard
+    const userRank = await this.karmaService.getUserRank(currentUserId);
+
+    const topList = leaderboard
       .map((k, i) => `${i + 1}. <@${k.userId}> – ${k.balance} очков`)
       .join('\n');
 
-    return `*Топ пользователей по карме:*\n${text}`;
+    let response = `*Топ пользователей по карме:*\n${topList}`;
+
+    if (userRank) {
+      response += `\n\nВаше место в рейтинге: ${userRank}`;
+    }
+
+    return response;
   }
 }

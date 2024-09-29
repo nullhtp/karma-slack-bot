@@ -164,6 +164,15 @@ export class KarmaService {
     });
   }
 
+  async getUserRank(userId: string): Promise<number | null> {
+    const allUsers = await this.karmaRepository.find({
+      order: { balance: 'DESC' },
+    });
+
+    const userIndex = allUsers.findIndex((user) => user.userId === userId);
+    return userIndex !== -1 ? userIndex + 1 : null;
+  }
+
   // Метод для проверки целостности транзакций пользователя
   async verifyTransactionIntegrity(userId: string): Promise<boolean> {
     const transactions = await this.getUserTransactions(userId, 'ASC');
