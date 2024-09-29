@@ -7,6 +7,9 @@ const reactionMap = {
   four_leaf_clover: 10,
   gem: 100,
   star2: 300,
+  firecracker: -10,
+  bomb: -100,
+  collision: -300,
 };
 
 enum KarmaCommands {
@@ -245,30 +248,44 @@ export class SlackService implements OnModuleInit {
 
     const description = `За сообщение: "${messageText}"`;
 
-    const success = await this.karmaService.transferKarma(
-      user,
-      item_user,
-      amount,
-      description,
-    );
+    let success: boolean;
+    let actionText: string;
+
+    if (amount > 0) {
+      success = await this.karmaService.transferKarma(
+        user,
+        item_user,
+        amount,
+        description,
+      );
+      actionText = 'передали';
+    } else {
+      success = await this.karmaService.burnKarma(
+        user,
+        item_user,
+        Math.abs(amount),
+        description,
+      );
+      actionText = 'сожгли';
+    }
 
     if (success) {
       await this.client.chat.postEphemeral({
         channel: item.channel,
         user,
-        text: `Вы передали ${amount} кармы пользователю <@${item_user}>.`,
+        text: `Вы ${actionText} ${Math.abs(amount)} кармы ${amount > 0 ? 'пользователю' : 'у пользователя'} <@${item_user}>.`,
       });
 
       await this.client.chat.postEphemeral({
         channel: item.channel,
         user: item_user,
-        text: `Пользователь <@${user}> передал вам ${amount} кармы!`,
+        text: `Пользователь <@${user}> ${actionText} ${Math.abs(amount)} ${amount > 0 ? 'кармы вам' : 'вашей кармы'}!`,
       });
     } else {
       await this.client.chat.postEphemeral({
         channel: item.channel,
         user,
-        text: `У вас недостаточно кармы для передачи ${amount} очков.`,
+        text: `У вас ${amount > 0 ? 'недостаточно кармы для передачи' : 'или у указанного пользователя недостаточно кармы для сжигания'} ${Math.abs(amount)} очков.`,
       });
     }
   }
@@ -357,6 +374,10 @@ export class SlackService implements OnModuleInit {
         - 🍀 (\`:four_leaf_clover:\`) - передает 10 очков кармы.
         - 💎 (\`:gem:\`) - передает 100 очков кармы.
         - 🌟 (\`:star2:\`) - передает 300 очков кармы.
+
+        - 🧨 (\`:firecracker:\`) - сжигает 10 очков кармы у вас обоих.
+        - 💣 (\`:bomb:\`) - сжигает 100 очков кармы у вас обоих.
+        - 💥 (\`:collision:\`) - сжигает 300 очков кармы у вас обоих.
 
         Например, чтобы передать карму, используйте: \`/givekarma @username 50 За помощь в проекте\`.
         `;
