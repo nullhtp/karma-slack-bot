@@ -152,7 +152,17 @@ export class SlackService implements OnModuleInit {
       `/karma_${KarmaCommands.History}`,
       async ({ command, ack, respond }) => {
         await ack();
-        const result = await this.getHistory(command.user_id);
+        const args = command.text.trim();
+        let userId = command.user_id;
+
+        if (args.startsWith('<@') && args.endsWith('>')) {
+          userId = args.split('|')[0].slice(2);
+        }
+
+        const result = await this.getHistory(
+          userId,
+          userId === command.user_id,
+        );
         await respond(result);
       },
     );
@@ -322,11 +332,13 @@ export class SlackService implements OnModuleInit {
     }
   }
 
-  private async getHistory(userId: string) {
+  private async getHistory(userId: string, isSelf: boolean) {
     const transactions = await this.karmaService.getUserTransactions(userId);
 
     if (transactions.length === 0) {
-      return 'У вас нет записей в истории кармы.';
+      return isSelf
+        ? 'У вас нет записей в истории кармы.'
+        : `У пользователя <@${userId}> нет записей в истории кармы.`;
     }
 
     const history = transactions
@@ -337,7 +349,9 @@ export class SlackService implements OnModuleInit {
       )
       .join('\n');
 
-    return `*Ваши последние транзакции кармы:*\n${history}`;
+    return isSelf
+      ? `*Ваши последние транзакции кармы:*\n${history}`
+      : `*Последние транзакции кармы пользователя <@${userId}>:*\n${history}`;
   }
 
   private async checkKarma(userId: string, isSelf: boolean) {
@@ -365,7 +379,7 @@ export class SlackService implements OnModuleInit {
         1. \`/karma\` - Проверить ваш текущий баланс кармы.
         2. \`/karma_${KarmaCommands.Give} @user amount [описание]\` - Передать карму другому пользователю с возможностью указать за что.
         3. \`/karma_${KarmaCommands.Burn} @user amount [описание]\` - Сжечь карму у себя и у другого пользователя с возможностью указать причину.
-        4. \`/karma_${KarmaCommands.History}\` - Просмотреть вашу историю транзакций кармы (последние 10 записей).
+        4. \`/karma_${KarmaCommands.History} [@user]\` - Просмотреть историю транзакций кармы (последние 10 записей). Если указан @user, показывает историю этого пользователя.
         5. \`/karma_${KarmaCommands.Top}\` - Посмотреть таблицу лидеров по количеству кармы.
         6. \`/karma_${KarmaCommands.Help}\` - Показать все доступные команды и их описание.
         7. \`/karma_${KarmaCommands.Verify}\` - Проверка целостности истории кармы.

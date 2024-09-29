@@ -172,7 +172,6 @@ export class KarmaService {
     for (const transaction of transactions) {
       const recalculatedHash = this.generateHash(transaction, previousHash);
 
-      console.log({ recalculatedHash, transaction });
       if (recalculatedHash !== transaction.currentHash) {
         return false; // Нарушение целостности
       }
