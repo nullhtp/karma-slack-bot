@@ -91,6 +91,36 @@ export class KarmaService {
     return true;
   }
 
+  async burnKarma(
+    fromUserId: string,
+    toUserId: string,
+    amount: number,
+    description?: string,
+  ): Promise<boolean> {
+    const fromUser = await this.getUserKarma(fromUserId);
+    const toUser = await this.getUserKarma(toUserId);
+
+    if (fromUser.balance < amount || toUser.balance < amount) {
+      return false;
+    }
+
+    // Запись транзакций
+    await this.addTransaction(
+      fromUser,
+      -amount,
+      'spend',
+      `Сожжено вместе с пользователем <@${toUserId}>${description ? `: ${description}` : ''}`,
+    );
+    await this.addTransaction(
+      toUser,
+      -amount,
+      'spend',
+      `Сожжено вместе с пользователем <@${fromUserId}>${description ? `: ${description}` : ''}`,
+    );
+
+    return true;
+  }
+
   async addMonthlyKarma(): Promise<void> {
     const users = await this.karmaRepository.find();
     for (const user of users) {

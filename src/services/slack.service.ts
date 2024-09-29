@@ -12,6 +12,7 @@ const reactionMap = {
 enum KarmaCommands {
   Top = 'top',
   Give = 'give',
+  Burn = 'burn',
   Verify = 'verify',
   History = 'history',
   Help = 'help',
@@ -181,6 +182,43 @@ export class SlackService implements OnModuleInit {
         await respond(result);
       },
     );
+
+    this.app.command(
+      `/karma_${KarmaCommands.Burn}`,
+      async ({ command, ack, respond }) => {
+        await ack();
+        const args = command.text.trim();
+        const parts = args.split(' ');
+
+        if (parts.length < 2) {
+          await respond(
+            `Использование: '/karma_${KarmaCommands.Burn} @user amount [описание]'`,
+          );
+          return;
+        }
+
+        const userMention = parts[0];
+        const amountStr = parts[1];
+        const description = parts.slice(2).join(' ');
+
+        if (!userMention.startsWith('<@') || !userMention.endsWith('>')) {
+          await respond('Укажите пользователя в формате `@username`.');
+          return;
+        }
+
+        const toUserId = userMention.split('|')[0].slice(2);
+        const amount = parseInt(amountStr, 10);
+
+        const result = await this.burnKarma(
+          command.user_id,
+          toUserId,
+          amount,
+          description,
+        );
+
+        await respond(result);
+      },
+    );
   }
 
   private async handleReaction(event: ReactionAddedEvent) {
@@ -309,10 +347,11 @@ export class SlackService implements OnModuleInit {
         *Команды карма-бота*:
         1. \`/karma\` - Проверить ваш текущий баланс кармы.
         2. \`/karma_${KarmaCommands.Give} @user amount [описание]\` - Передать карму другому пользователю с возможностью указать за что.
-        3. \`/karma_${KarmaCommands.History}\` - Просмотреть вашу историю транзакций кармы (последние 10 записей).
-        4. \`/karma_${KarmaCommands.Top}\` - Посмотреть таблицу лидеров по количеству кармы.
-        5. \`/karma_${KarmaCommands.Help}\` - Показать все доступные команды и их описание.
-        6. \`/karma_${KarmaCommands.Verify}\` - Проверка целостности истории кармы.
+        3. \`/karma_${KarmaCommands.Burn} @user amount [описание]\` - Сжечь карму у себя и у другого пользователя с возможностью указать причину.
+        4. \`/karma_${KarmaCommands.History}\` - Просмотреть вашу историю транзакций кармы (последние 10 записей).
+        5. \`/karma_${KarmaCommands.Top}\` - Посмотреть таблицу лидеров по количеству кармы.
+        6. \`/karma_${KarmaCommands.Help}\` - Показать все доступные команды и их описание.
+        7. \`/karma_${KarmaCommands.Verify}\` - Проверка целостности истории кармы.
 
         *Реакции и начисления кармы*:
         - 🍀 (\`:four_leaf_clover:\`) - передает 10 очков кармы.
@@ -331,5 +370,38 @@ export class SlackService implements OnModuleInit {
       .join('\n');
 
     return `*Топ пользователей по карме:*\n${text}`;
+  }
+
+  // Add this new method
+  private async burnKarma(
+    fromUserId: string,
+    toUserId: string,
+    amount: number,
+    description: string,
+  ) {
+    if (isNaN(amount) || amount <= 0) {
+      return 'Укажите корректную сумму кармы для сжигания.';
+    }
+
+    if (!toUserId) {
+      return 'Пользователь не найден';
+    }
+
+    if (toUserId === fromUserId) {
+      return 'Нельзя сжигать карму самому себе.';
+    }
+
+    const success = await this.karmaService.burnKarma(
+      fromUserId,
+      toUserId,
+      amount,
+      description,
+    );
+
+    if (success) {
+      return `Вы сожгли ${amount} кармы у себя и у пользователя <@${toUserId}>${description ? ` с сообщением: "${description}"` : ''}.`;
+    } else {
+      return 'У вас или у указанного пользователя недостаточно кармы для сжигания указанной суммы.';
+    }
   }
 }
