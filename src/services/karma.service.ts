@@ -180,7 +180,7 @@ export class KarmaService {
     return this.transactionRepository.find({
       where: { user: { userId } },
       order: { date: orderDate },
-      relations: ['user'],
+      relations: ['user', 'initiator'],
     });
   }
 
