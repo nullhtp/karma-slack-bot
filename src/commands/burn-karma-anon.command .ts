@@ -1,9 +1,9 @@
 import { SlackCommandHandler } from './slack.command';
 import { KarmaCommands } from '../constants';
 
-export class BurnKarmaCommand extends SlackCommandHandler {
+export class BurnKarmaAnonCommand extends SlackCommandHandler {
   getCommandName(): string {
-    return `/karma_${KarmaCommands.Burn}`;
+    return `/karma_${KarmaCommands.BurnAnon}`;
   }
 
   async handle(command: any): Promise<string> {
@@ -13,8 +13,8 @@ export class BurnKarmaCommand extends SlackCommandHandler {
       .split(' ');
     const description = descriptionParts.join(' ');
 
-    if (!this.isValidCommandFormat(userMention, amountStr)) {
-      return `Usage: '/karma_${KarmaCommands.Burn} @user amount [description]'`;
+    if (!this.isValidCommandFormat(userMention, amountStr, description)) {
+      return `Using: '/karma_${KarmaCommands.BurnAnon} @user amount description'`;
     }
 
     const toUserId = this.extractUserId(userMention);
@@ -26,11 +26,13 @@ export class BurnKarmaCommand extends SlackCommandHandler {
   private isValidCommandFormat(
     userMention: string,
     amountStr: string,
+    description: string,
   ): boolean {
     return (
       userMention.startsWith('<@') &&
       userMention.endsWith('>') &&
-      !isNaN(parseInt(amountStr, 10))
+      !isNaN(parseInt(amountStr, 10)) &&
+      description.length > 3
     );
   }
 
@@ -52,7 +54,7 @@ export class BurnKarmaCommand extends SlackCommandHandler {
     );
 
     return success
-      ? `You burned ${amount} karma from yourself and from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`
+      ? `You have burned ${amount} karma from yourself and from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`
       : 'You or the specified user do not have enough karma to burn the specified amount.';
   }
 
@@ -69,8 +71,8 @@ export class BurnKarmaCommand extends SlackCommandHandler {
     isBurn: boolean = false,
   ): string {
     if (isNaN(amount) || amount <= 0) {
-      return `Please specify a valid amount of karma for ${isBurn ? 'burning' : 'transferring'}.`;
+      return `Please specify a valid amount of karma for ${isBurn ? 'burning' : 'transfer'}.`;
     }
-    return 'Invalid command format. Check the specified user and amount.';
+    return 'Invalid command format. Please check the specified user and amount.';
   }
 }

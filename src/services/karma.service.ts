@@ -14,7 +14,7 @@ export class KarmaService {
     private transactionRepository: Repository<KarmaTransaction>,
   ) {}
 
-  // Метод для получения последнего хеша из истории транзакций
+  // Method to get the last hash from the transaction history
   async getLastTransactionHash(userId: string): Promise<string> {
     const lastTransaction = await this.transactionRepository.findOne({
       where: { user: { userId } },
@@ -23,17 +23,18 @@ export class KarmaService {
     return lastTransaction ? lastTransaction.currentHash : '';
   }
 
-  // Метод для генерации хеша транзакции
+  // Method to generate a transaction hash
   generateHash(
     transaction: Partial<KarmaTransaction>,
     previousHash: string,
   ): string {
-    const data = `${transaction.user.userId}${transaction.amount}${transaction.type}${transaction.date}${transaction.description}${previousHash}`;
+    const data = `${transaction.user.userId}${transaction.initiator.userId}${transaction.amount}${transaction.type}${transaction.date}${transaction.description}${previousHash}`;
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
-  // Метод для добавления транзакции с хешированием
+  // Method to add a transaction with hashing
   async addTransaction(
+    initiator: Karma,
     user: Karma,
     amount: number,
     type: 'earn' | 'spend',
@@ -42,6 +43,7 @@ export class KarmaService {
     const previousHash = await this.getLastTransactionHash(user.userId);
     const transaction = this.transactionRepository.create({
       user,
+      initiator,
       amount,
       type,
       description,
@@ -74,18 +76,20 @@ export class KarmaService {
       return false;
     }
 
-    // Запись транзакций
+    // Recording transactions
     await this.addTransaction(
+      fromUser,
       fromUser,
       -amount,
       'spend',
-      `Передано пользователю <@${toUserId}>${description ? `: ${description}` : ''}`,
+      description ?? '',
     );
     await this.addTransaction(
+      fromUser,
       toUser,
       amount,
       'earn',
-      `Получено от пользователя <@${fromUserId}>${description ? `: ${description}` : ''}`,
+      description ?? '',
     );
 
     return true;
@@ -104,19 +108,41 @@ export class KarmaService {
       return false;
     }
 
-    // Запись транзакций
+    // Recording transactions
     await this.addTransaction(
+      fromUser,
       fromUser,
       -amount,
       'spend',
-      `Сожжено вместе с пользователем <@${toUserId}>${description ? `: ${description}` : ''}`,
+      description,
     );
+    await this.addTransaction(fromUser, toUser, -amount, 'spend', description);
+
+    return true;
+  }
+
+  async burnAnonKarma(
+    fromUserId: string,
+    toUserId: string,
+    amount: number,
+    description: string,
+  ): Promise<boolean> {
+    const fromUser = await this.getUserKarma(fromUserId);
+    const toUser = await this.getUserKarma(toUserId);
+
+    if (fromUser.balance < amount * 2 || toUser.balance < amount) {
+      return false;
+    }
+
+    // Recording transactions
     await this.addTransaction(
-      toUser,
-      -amount,
+      fromUser,
+      fromUser,
+      -amount * 2,
       'spend',
-      `Сожжено вместе с пользователем <@${fromUserId}>${description ? `: ${description}` : ''}`,
+      description,
     );
+    await this.addTransaction(toUser, toUser, -amount, 'spend', description);
 
     return true;
   }
@@ -131,18 +157,19 @@ export class KarmaService {
   async addMonthlyKarmaToUser(userId: string): Promise<void> {
     let userKarma = await this.getUserKarma(userId);
 
-    // Если пользователь еще не существует в базе, создаем его
+    // If the user does not exist in the database, create them
     if (!userKarma) {
       userKarma = this.karmaRepository.create({ userId, balance: 0 });
       await this.karmaRepository.save(userKarma);
     }
 
-    // Запись транзакции в журнал
+    // Recording a transaction in the log
     await this.addTransaction(
+      userKarma,
       userKarma,
       1000,
       'earn',
-      'Ежемесячное начисление кармы',
+      'Earn monthly karma',
     );
   }
 
@@ -173,7 +200,7 @@ export class KarmaService {
     return userIndex !== -1 ? userIndex + 1 : null;
   }
 
-  // Метод для проверки целостности транзакций пользователя и баланса
+  // Method to check the integrity of user transactions and balance
   async verifyTransactionIntegrity(userId: string): Promise<boolean> {
     const transactions = await this.getUserTransactions(userId, 'ASC');
     let previousHash = '';
@@ -183,19 +210,19 @@ export class KarmaService {
       const recalculatedHash = this.generateHash(transaction, previousHash);
 
       if (recalculatedHash !== transaction.currentHash) {
-        return false; // Нарушение целостности хеша
+        return false; // Hash integrity violation
       }
 
       calculatedBalance += transaction.amount;
       previousHash = transaction.currentHash;
     }
 
-    // Проверка соответствия текущего баланса расчетному
+    // Check if the current balance matches the calculated one
     const currentKarma = await this.getUserKarma(userId);
     if (currentKarma.balance !== calculatedBalance) {
-      return false; // Несоответствие баланса
+      return false; // Balance mismatch
     }
 
-    return true; // Целостность подтверждена
+    return true; // Integrity confirmed
   }
 }

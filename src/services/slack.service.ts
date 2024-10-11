@@ -53,11 +53,11 @@ export class SlackService implements OnModuleInit {
         const userExists = await this.karmaService.getUserKarma(member.id);
         if (!userExists) {
           await this.karmaService.addMonthlyKarmaToUser(member.id);
-          console.log(`Начислена месячная карма пользователю <@${member.id}>.`);
+          console.log(`Monthly karma awarded to user <@${member.id}>.`);
         }
       }
     } catch (error) {
-      console.error('Ошибка при начислении кармы всем пользователям:', error);
+      console.error('Error while awarding karma to all users:', error);
     }
   }
 

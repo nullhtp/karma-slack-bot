@@ -15,9 +15,9 @@ export class VerifyKarmaCommand extends SlackCommandHandler {
 
   private async verifyKarma(userId: string, isSelf: boolean): Promise<string> {
     const isValid = await this.karmaService.verifyTransactionIntegrity(userId);
-    const userMention = isSelf ? 'Ваша' : `Пользователя <@${userId}>`;
+    const userMention = isSelf ? 'Your' : `User <@${userId}>`;
     return isValid
-      ? `✅ ${userMention} история кармы в порядке. Все транзакции корректны и не были изменены.`
-      : `⚠️ Обнаружено нарушение целостности ${userMention.toLowerCase()} истории кармы. Пожалуйста, обратитесь к администратору для дальнейшего разбирательства.`;
+      ? `✅ ${userMention} karma history is in order. All transactions are correct and have not been altered.`
+      : `⚠️ Integrity violation detected in ${userMention.toLowerCase()} karma history. Please contact the administrator for further investigation.`;
   }
 }

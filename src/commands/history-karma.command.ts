@@ -17,14 +17,14 @@ export class KarmaHistoryCommand extends SlackCommandHandler {
 
     if (transactions.length === 0) {
       return isSelf
-        ? 'У вас нет записей в истории кармы.'
-        : `У пользователя <@${userId}> нет записей в истории кармы.`;
+        ? 'You have no records in your karma history.'
+        : `User <@${userId}> has no records in their karma history.`;
     }
 
     const history = this.formatTransactionHistory(transactions);
     const prefix = isSelf
-      ? 'Ваши последние транзакции кармы:'
-      : `Последние транзакции кармы пользователя <@${userId}>:`;
+      ? 'Your latest karma transactions:'
+      : `Latest karma transactions of user <@${userId}>:`;
 
     return `*${prefix}*\n${history}`;
   }

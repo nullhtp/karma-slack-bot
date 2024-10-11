@@ -9,6 +9,8 @@ export class TeamJoinHandler extends SlackHandler {
 
   private async handleTeamJoin(userId: string) {
     await this.karmaService.addMonthlyKarmaToUser(userId);
-    console.log(`Начислена месячная карма новому пользователю <@${userId}>.`);
+    console.log(
+      `Monthly karma has been credited to the new user <@${userId}>.`,
+    );
   }
 }

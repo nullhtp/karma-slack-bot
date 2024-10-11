@@ -69,7 +69,7 @@ export class ReactionBurnHandler extends SlackHandler {
     await this.sendEphemeralMessage(
       channel,
       user,
-      `Вы сожгли ${amount} кармы у пользователя <@${itemUser}> и у себя.`,
+      `You burned ${amount} karma from user <@${itemUser}> and from yourself.`,
     );
   }
 
@@ -82,7 +82,7 @@ export class ReactionBurnHandler extends SlackHandler {
     await this.sendEphemeralMessage(
       channel,
       itemUser,
-      `Пользователь <@${user}> сжег ${amount} вашей кармы!`,
+      `User <@${user}> burned ${amount} of your karma!`,
     );
   }
 
@@ -95,7 +95,7 @@ export class ReactionBurnHandler extends SlackHandler {
     await this.sendEphemeralMessage(
       channel,
       user,
-      `У пользователя <@${itemUser}> недостаточно кармы для сжигания ${amount} очков.`,
+      `User <@${itemUser}> does not have enough karma to burn ${amount} points.`,
     );
   }
 }

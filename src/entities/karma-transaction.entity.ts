@@ -15,6 +15,9 @@ export class KarmaTransaction {
   @ManyToOne(() => Karma, (user) => user.transactions)
   user: Karma;
 
+  @ManyToOne(() => Karma)
+  initiator: Karma;
+
   @Column()
   amount: number;
 

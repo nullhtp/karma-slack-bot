@@ -25,7 +25,7 @@ export class GiveKarmaCommand extends SlackCommandHandler {
     const description = descriptionParts.join(' ');
 
     if (!this.isValidCommandFormat(userMention, amountStr)) {
-      return `Использование: '/karma_${KarmaCommands.Give} @user amount [описание]'`;
+      return `Usage: '/karma_${KarmaCommands.Give} @user amount [description]'`;
     }
 
     const toUserId = this.extractUserId(userMention);
@@ -52,8 +52,8 @@ export class GiveKarmaCommand extends SlackCommandHandler {
     );
 
     return success
-      ? `Вы передали ${amount} кармы пользователю <@${toUserId}>${description ? ` с сообщением: "${description}"` : ''}.`
-      : 'У вас недостаточно кармы для передачи указанной суммы.';
+      ? `You have transferred ${amount} karma to user <@${toUserId}>${description ? ` with message: "${description}"` : ''}.`
+      : 'You do not have enough karma to transfer the specified amount.';
   }
 
   private isValidKarmaTransaction(
@@ -66,8 +66,8 @@ export class GiveKarmaCommand extends SlackCommandHandler {
 
   private getInvalidTransactionMessage(amount: number): string {
     if (isNaN(amount) || amount <= 0) {
-      return `Укажите корректную сумму кармы для передачи.`;
+      return `Please specify a valid amount of karma to transfer.`;
     }
-    return 'Некорректный формат команды. Проверьте указанного пользователя и сумму.';
+    return 'Invalid command format. Check the specified user and amount.';
   }
 }

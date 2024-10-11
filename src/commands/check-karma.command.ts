@@ -17,7 +17,7 @@ export class CheckKarmaCommand extends SlackCommandHandler {
   private async checkKarma(userId: string, isSelf: boolean): Promise<string> {
     const karma = await this.karmaService.getUserKarma(userId);
     return isSelf
-      ? `Ваш текущий баланс кармы: ${karma.balance} очков.`
-      : `Текущий баланс кармы пользователя <@${userId}>: ${karma.balance} очков.`;
+      ? `Your current karma balance: ${karma.balance} points.`
+      : `Current karma balance of user <@${userId}>: ${karma.balance} points.`;
   }
 }

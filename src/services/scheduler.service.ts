@@ -11,6 +11,6 @@ export class SchedulerService implements OnModuleInit {
   @Cron('0 0 1 * *')
   async handleMonthlyKarma() {
     await this.karmaService.addMonthlyKarma();
-    console.log('Ежемесячная карма начислена всем пользователям.');
+    console.log('Monthly karma has been credited to all users.');
   }
 }

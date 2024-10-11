@@ -12,25 +12,26 @@ export class HelpKarmaCommand extends SlackCommandHandler {
 
   private getHelp(): string {
     return `
-        *Команды карма-бота*:
-        1. \`/karma [@user]\` - Проверить ваш текущий баланс кармы.
-        2. \`/karma_${KarmaCommands.Give} @user amount [описание]\` - Передать карму другому пользователю с возможностью указать за что.
-        3. \`/karma_${KarmaCommands.Burn} @user amount [описание]\` - Сжечь карму у себя и у другого пользователя с возможностью указать причину.
-        4. \`/karma_${KarmaCommands.History} [@user]\` - Просмотреть историю транзакций кармы (последние 10 записей). Если указан @user, показывает историю этого пользователя.
-        5. \`/karma_${KarmaCommands.Top}\` - Посмотреть таблицу лидеров по количеству кармы.
-        6. \`/karma_${KarmaCommands.Help}\` - Показать все доступные команды и их описание.
-        7. \`/karma_${KarmaCommands.Verify} [@user]\` - Проверка целостности истории кармы.
+        *Karma Bot Commands*:
+        1. \`/karma [@user]\` - Check your current karma balance.
+        2. \`/karma_${KarmaCommands.Give} @user amount [description]\` - Transfer karma to another user with the option to specify the reason.
+        3. \`/karma_${KarmaCommands.Burn} @user amount [description]\` - Burn karma from yourself and another user with the option to specify the reason.
+        3. \`/karma_${KarmaCommands.BurnAnon} @user amount description\` - Burn karma from yourself (x2) and another user anonymously with specify the reason.
+        4. \`/karma_${KarmaCommands.History} [@user]\` - View the karma transaction history (last 10 entries). If @user is specified, shows that user's history.
+        5. \`/karma_${KarmaCommands.Top}\` - View the leaderboard for the amount of karma.
+        6. \`/karma_${KarmaCommands.Help}\` - Show all available commands and their descriptions.
+        7. \`/karma_${KarmaCommands.Verify} [@user]\` - Verify the integrity of the karma history.
 
-        *Реакции и начисления кармы*:
-        - 🍀 (\`:four_leaf_clover:\`) - передает 10 очков кармы.
-        - 💎 (\`:gem:\`) - передает 100 очков кармы.
-        - 🌟 (\`:star2:\`) - передает 300 очков кармы.
+        *Reactions and Karma Accumulation*:
+        - 🍀 (\`:four_leaf_clover:\`) - transfers 10 karma points.
+        - 💎 (\`:gem:\`) - transfers 100 karma points.
+        - 🌟 (\`:star2:\`) - transfers 300 karma points.
 
-        - 🧨 (\`:firecracker:\`) - сжигает 10 очков кармы у вас обоих.
-        - 💣 (\`:bomb:\`) - сжигает 100 очков кармы у вас обоих.
-        - 💥 (\`:collision:\`) - сжигает 300 очков кармы у вас обоих.
+        - 🧨 (\`:firecracker:\`) - burns 10 karma points from both of you.
+        - 💣 (\`:bomb:\`) - burns 100 karma points from both of you.
+        - 💥 (\`:collision:\`) - burns 300 karma points from both of you.
 
-        Например, чтобы передать карму, используйте: \`/karma_give @username 50 За помощь в проекте\`.
+        For example, to transfer karma, use: \`/karma_give @username 50 For help with the project\`.
         `;
   }
 }

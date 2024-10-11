@@ -69,7 +69,7 @@ export class ReactionGivenHandler extends SlackHandler {
     await this.sendEphemeralMessage(
       channel,
       user,
-      `Вы передали ${amount} кармы пользователю <@${itemUser}>.`,
+      `You have given ${amount} karma to user <@${itemUser}>.`,
     );
   }
 
@@ -82,7 +82,7 @@ export class ReactionGivenHandler extends SlackHandler {
     await this.sendEphemeralMessage(
       channel,
       itemUser,
-      `Пользователь <@${user}> передал ${amount} кармы вам!`,
+      `User <@${user}> has given you ${amount} karma!`,
     );
   }
 
@@ -94,7 +94,7 @@ export class ReactionGivenHandler extends SlackHandler {
     await this.sendEphemeralMessage(
       channel,
       user,
-      `У вас недостаточно кармы для передачи ${amount} очков.`,
+      `You do not have enough karma to give ${amount} points.`,
     );
   }
 }
