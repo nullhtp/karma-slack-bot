@@ -23,7 +23,7 @@ export class ReactionBurnHandler extends SlackHandler {
     if (!amount || amount >= 0) return;
 
     const messageText = await this.getMessageText(item);
-    const description = `За сообщение: "${messageText}"`;
+    const description = `For the message: "${messageText}"`;
 
     const success = await this.karmaService.burnKarma(
       user,
