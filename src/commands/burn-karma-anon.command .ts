@@ -54,7 +54,7 @@ export class BurnKarmaAnonCommand extends SlackCommandHandler {
     );
 
     return success
-      ? `You have burned ${amount} karma from yourself and from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`
+      ? `You have burned ${amount * 2} karma from yourself and ${amount} from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`
       : 'You or the specified user do not have enough karma to burn the specified amount.';
   }
 
