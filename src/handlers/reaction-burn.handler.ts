@@ -25,39 +25,35 @@ export class ReactionBurnHandler extends SlackHandler {
     const messageText = await this.getMessageText(item);
     const description = `For the message: "${messageText}"`;
 
-    const success = await this.karmaService.burnKarma(
-      user,
-      item_user,
-      Math.abs(amount),
+    const fromUser = await this.karmaService.getUserKarma(user);
+    const toUser = await this.karmaService.getUserKarma(item_user);
+
+    if (fromUser.balance < amount || toUser.balance < amount) {
+      await this.notifyInsufficientKarma(item.channel, user, item_user, amount);
+
+      return;
+    }
+
+    // Recording transactions
+    await this.karmaService.addTransaction(
+      fromUser,
+      fromUser,
+      -amount,
+      description,
+    );
+    await this.karmaService.addTransaction(
+      fromUser,
+      toUser,
+      -amount,
       description,
     );
 
-    await this.sendNotifications(
-      item.channel,
-      user,
-      item_user,
-      Math.abs(amount),
-      success,
-    );
+    await this.notifyBurner(item.channel, user, item_user, amount);
+    await this.notifyVictim(item.channel, user, item_user, amount);
   }
 
   private isValidReaction(user: string, itemUser: string): boolean {
     return user !== itemUser && !!itemUser && !!user;
-  }
-
-  private async sendNotifications(
-    channel: string,
-    user: string,
-    itemUser: string,
-    amount: number,
-    success: boolean,
-  ) {
-    if (success) {
-      await this.notifyBurner(channel, user, itemUser, amount);
-      await this.notifyVictim(channel, user, itemUser, amount);
-    } else {
-      await this.notifyInsufficientKarma(channel, user, itemUser, amount);
-    }
   }
 
   private async notifyBurner(

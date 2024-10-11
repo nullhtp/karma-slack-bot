@@ -44,16 +44,28 @@ export class BurnKarmaCommand extends SlackCommandHandler {
       return this.getInvalidTransactionMessage(amount, true);
     }
 
-    const success = await this.karmaService.burnKarma(
-      fromUserId,
-      toUserId,
-      amount,
+    const fromUser = await this.karmaService.getUserKarma(fromUserId);
+    const toUser = await this.karmaService.getUserKarma(toUserId);
+
+    if (fromUser.balance < amount || toUser.balance < amount) {
+      return 'You or the specified user do not have enough karma to burn the specified amount.';
+    }
+
+    // Recording transactions
+    await this.karmaService.addTransaction(
+      fromUser,
+      fromUser,
+      -amount,
+      description,
+    );
+    await this.karmaService.addTransaction(
+      fromUser,
+      toUser,
+      -amount,
       description,
     );
 
-    return success
-      ? `You burned ${amount} karma from yourself and from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`
-      : 'You or the specified user do not have enough karma to burn the specified amount.';
+    return `You burned ${amount} karma from yourself and from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`;
   }
 
   private isValidKarmaTransaction(

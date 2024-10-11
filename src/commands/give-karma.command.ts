@@ -44,16 +44,28 @@ export class GiveKarmaCommand extends SlackCommandHandler {
       return this.getInvalidTransactionMessage(amount);
     }
 
-    const success = await this.karmaService.transferKarma(
-      fromUserId,
-      toUserId,
+    const fromUser = await this.karmaService.getUserKarma(fromUserId);
+    const toUser = await this.karmaService.getUserKarma(toUserId);
+
+    if (fromUser.balance < amount) {
+      return 'You do not have enough karma to transfer the specified amount.';
+    }
+
+    // Recording transactions
+    await this.karmaService.addTransaction(
+      fromUser,
+      fromUser,
+      -amount,
+      description ?? '',
+    );
+    await this.karmaService.addTransaction(
+      fromUser,
+      toUser,
       amount,
-      description,
+      description ?? '',
     );
 
-    return success
-      ? `You have transferred ${amount} karma to user <@${toUserId}>${description ? ` with message: "${description}"` : ''}.`
-      : 'You do not have enough karma to transfer the specified amount.';
+    return `You have transferred ${amount} karma to user <@${toUserId}>${description ? ` with message: "${description}"` : ''}.`;
   }
 
   private isValidKarmaTransaction(

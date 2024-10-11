@@ -25,39 +25,35 @@ export class ReactionGivenHandler extends SlackHandler {
     const messageText = await this.getMessageText(item);
     const description = `For the message: "${messageText}"`;
 
-    const success = await this.karmaService.transferKarma(
-      user,
-      item_user,
+    const fromUser = await this.karmaService.getUserKarma(user);
+    const toUser = await this.karmaService.getUserKarma(item_user);
+
+    if (fromUser.balance < amount) {
+      await this.notifyInsufficientKarma(item.channel, user, amount);
+
+      return;
+    }
+
+    // Recording transactions
+    await this.karmaService.addTransaction(
+      fromUser,
+      fromUser,
+      -amount,
+      description ?? '',
+    );
+    await this.karmaService.addTransaction(
+      fromUser,
+      toUser,
       amount,
-      description,
+      description ?? '',
     );
 
-    await this.sendNotifications(
-      item.channel,
-      user,
-      item_user,
-      amount,
-      success,
-    );
+    await this.notifyGiver(item.channel, user, item_user, amount);
+    await this.notifyReceiver(item.channel, user, item_user, amount);
   }
 
   private isValidReaction(user: string, itemUser: string): boolean {
     return user !== itemUser && !!itemUser && !!user;
-  }
-
-  private async sendNotifications(
-    channel: string,
-    user: string,
-    itemUser: string,
-    amount: number,
-    success: boolean,
-  ) {
-    if (success) {
-      await this.notifyGiver(channel, user, itemUser, amount);
-      await this.notifyReceiver(channel, user, itemUser, amount);
-    } else {
-      await this.notifyInsufficientKarma(channel, user, amount);
-    }
   }
 
   private async notifyGiver(

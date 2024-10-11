@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Karma } from '../entities/karma.entity';
 import { KarmaTransaction } from '../entities/karma-transaction.entity';
 import * as crypto from 'crypto';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class KarmaService {
@@ -12,6 +13,7 @@ export class KarmaService {
     private karmaRepository: Repository<Karma>,
     @InjectRepository(KarmaTransaction)
     private transactionRepository: Repository<KarmaTransaction>,
+    private readonly i18n: I18nService,
   ) {}
 
   // Method to get the last hash from the transaction history
@@ -28,7 +30,7 @@ export class KarmaService {
     transaction: Partial<KarmaTransaction>,
     previousHash: string,
   ): string {
-    const data = `${transaction.user.userId}${transaction.initiator.userId}${transaction.amount}${transaction.type}${transaction.date}${transaction.description}${previousHash}`;
+    const data = `${transaction.user.userId}${transaction.initiator.userId}${transaction.amount}${transaction.date}${transaction.description}${previousHash}`;
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
@@ -37,7 +39,6 @@ export class KarmaService {
     initiator: Karma,
     user: Karma,
     amount: number,
-    type: 'earn' | 'spend',
     description: string,
   ): Promise<void> {
     const previousHash = await this.getLastTransactionHash(user.userId);
@@ -45,7 +46,6 @@ export class KarmaService {
       user,
       initiator,
       amount,
-      type,
       description,
       previousHash,
       date: new Date(),
@@ -63,97 +63,6 @@ export class KarmaService {
     return karma;
   }
 
-  async transferKarma(
-    fromUserId: string,
-    toUserId: string,
-    amount: number,
-    description?: string,
-  ): Promise<boolean> {
-    const fromUser = await this.getUserKarma(fromUserId);
-    const toUser = await this.getUserKarma(toUserId);
-
-    if (fromUser.balance < amount) {
-      return false;
-    }
-
-    // Recording transactions
-    await this.addTransaction(
-      fromUser,
-      fromUser,
-      -amount,
-      'spend',
-      description ?? '',
-    );
-    await this.addTransaction(
-      fromUser,
-      toUser,
-      amount,
-      'earn',
-      description ?? '',
-    );
-
-    return true;
-  }
-
-  async burnKarma(
-    fromUserId: string,
-    toUserId: string,
-    amount: number,
-    description?: string,
-  ): Promise<boolean> {
-    const fromUser = await this.getUserKarma(fromUserId);
-    const toUser = await this.getUserKarma(toUserId);
-
-    if (fromUser.balance < amount || toUser.balance < amount) {
-      return false;
-    }
-
-    // Recording transactions
-    await this.addTransaction(
-      fromUser,
-      fromUser,
-      -amount,
-      'spend',
-      description,
-    );
-    await this.addTransaction(fromUser, toUser, -amount, 'spend', description);
-
-    return true;
-  }
-
-  async burnAnonKarma(
-    fromUserId: string,
-    toUserId: string,
-    amount: number,
-    description: string,
-  ): Promise<boolean> {
-    const fromUser = await this.getUserKarma(fromUserId);
-    const toUser = await this.getUserKarma(toUserId);
-
-    if (fromUser.balance < amount * 2 || toUser.balance < amount) {
-      return false;
-    }
-
-    // Recording transactions
-    await this.addTransaction(
-      fromUser,
-      fromUser,
-      -amount * 2,
-      'spend',
-      description,
-    );
-    await this.addTransaction(toUser, toUser, -amount, 'spend', description);
-
-    return true;
-  }
-
-  async addMonthlyKarma(): Promise<void> {
-    const users = await this.karmaRepository.find();
-    for (const user of users) {
-      await this.addMonthlyKarmaToUser(user.userId);
-    }
-  }
-
   async addMonthlyKarmaToUser(userId: string): Promise<void> {
     let userKarma = await this.getUserKarma(userId);
 
@@ -168,8 +77,7 @@ export class KarmaService {
       userKarma,
       userKarma,
       1000,
-      'earn',
-      'Earn monthly karma',
+      this.i18n.t('karma.earnMonthlyKarma'),
     );
   }
 

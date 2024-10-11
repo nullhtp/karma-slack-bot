@@ -6,6 +6,8 @@ import { SlackService } from './services/slack.service';
 import { SchedulerService } from './services/scheduler.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { KarmaTransaction } from './entities/karma-transaction.entity';
+import { I18nModule } from 'nestjs-i18n';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -14,6 +16,13 @@ import { KarmaTransaction } from './entities/karma-transaction.entity';
       database: 'karma.db',
       entities: [Karma, KarmaTransaction],
       synchronize: true,
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: join(__dirname, '/i18n/'),
+        watch: true,
+      },
     }),
     TypeOrmModule.forFeature([Karma, KarmaTransaction]),
     ScheduleModule.forRoot(),

@@ -21,9 +21,6 @@ export class KarmaTransaction {
   @Column()
   amount: number;
 
-  @Column()
-  type: 'earn' | 'spend';
-
   @Column({ nullable: true })
   description: string;
 
