@@ -1,0 +1,94 @@
+{
+  "display_information": {
+    "name": "BF Karma",
+    "description": "Reward colleagues with karma for their help and initiative",
+    "background_color": "#016387",
+    "long_description": "The Karma Bot for Slack helps foster a positive work culture by encouraging employees for their contributions and support of their colleagues. Through the bot, users can award karma using Slack reactions and commands. The bot also allows viewing the history of all karma transactions and tracking team achievements through a leaderboard, promoting team spirit and motivation."
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "BF Karma",
+      "always_online": false
+    },
+    "slash_commands": [
+      {
+        "command": "/karma",
+        "description": "Check the current karma balance for yourself or any user",
+        "usage_hint": "[@user]",
+        "should_escape": true
+      },
+      {
+        "command": "/karma_top",
+        "description": "View the leaderboard for karma points.",
+        "should_escape": false
+      },
+      {
+        "command": "/karma_help",
+        "description": "Show all available commands and their descriptions",
+        "should_escape": false
+      },
+      {
+        "command": "/karma_history",
+        "description": "View the history of karma transactions (last 10 entries). For yourself or another user",
+        "usage_hint": "[@user]",
+        "should_escape": true
+      },
+      {
+        "command": "/karma_give",
+        "description": "Give karma to another user with an optional description of why.",
+        "usage_hint": "@user amount [description]",
+        "should_escape": true
+      },
+      {
+        "command": "/karma_verify",
+        "description": "Verify the integrity of the karma history",
+        "usage_hint": "[@user]",
+        "should_escape": true
+      },
+      {
+        "command": "/karma_burn",
+        "description": "Burn karma from yourself and another user",
+        "usage_hint": "@user amount [description]",
+        "should_escape": true
+      },
+      {
+        "command": "/karma_burn_anon",
+        "description": "Anonymously burn karma from yourself and another user",
+        "usage_hint": "@user amount [description]",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "chat:write",
+        "commands",
+        "reactions:read",
+        "users:read",
+        "channels:history",
+        "app_mentions:read",
+        "groups:history",
+        "im:history"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "reaction_added",
+        "team_join"
+      ]
+    },
+    "interactivity": {
+      "is_enabled": true
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false
+  }
+}
