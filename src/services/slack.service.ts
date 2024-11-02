@@ -13,13 +13,17 @@ import { SlackCommandHandler } from '../commands/slack.command';
 import { TeamJoinHandler } from '../handlers/team-join.handler';
 import { ReactionGivenHandler } from '../handlers/reaction-added.handler';
 import { ReactionBurnHandler } from '../handlers/reaction-burn.handler';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class SlackService implements OnModuleInit {
   private app: App;
   private client: WebClient;
 
-  constructor(private karmaService: KarmaService) {}
+  constructor(
+    private karmaService: KarmaService,
+    private i18n: I18nService,
+  ) {}
 
   async onModuleInit() {
     this.initializeSlackApp();
@@ -77,25 +81,32 @@ export class SlackService implements OnModuleInit {
       this.app,
       this.karmaService,
       this.client,
+      this.i18n,
     ).register();
     new ReactionBurnHandler(
       this.app,
       this.karmaService,
       this.client,
+      this.i18n,
     ).register();
 
-    new TeamJoinHandler(this.app, this.karmaService, this.client).register();
+    new TeamJoinHandler(
+      this.app,
+      this.karmaService,
+      this.client,
+      this.i18n,
+    ).register();
     this.registerKarmaCommands();
   }
 
   private registerKarmaCommands() {
-    this.registerCommand(new GiveKarmaCommand(this.karmaService));
-    this.registerCommand(new CheckKarmaCommand(this.karmaService));
-    this.registerCommand(new KarmaHistoryCommand(this.karmaService));
-    this.registerCommand(new VerifyKarmaCommand(this.karmaService));
-    this.registerCommand(new HelpKarmaCommand());
-    this.registerCommand(new TopKarmaCommand(this.karmaService));
-    this.registerCommand(new BurnKarmaCommand(this.karmaService));
+    this.registerCommand(new GiveKarmaCommand(this.i18n, this.karmaService));
+    this.registerCommand(new CheckKarmaCommand(this.i18n, this.karmaService));
+    this.registerCommand(new KarmaHistoryCommand(this.i18n, this.karmaService));
+    this.registerCommand(new VerifyKarmaCommand(this.i18n, this.karmaService));
+    this.registerCommand(new HelpKarmaCommand(this.i18n));
+    this.registerCommand(new TopKarmaCommand(this.i18n, this.karmaService));
+    this.registerCommand(new BurnKarmaCommand(this.i18n, this.karmaService));
   }
 
   private registerCommand(handler: SlackCommandHandler) {

@@ -14,7 +14,11 @@ export class BurnKarmaAnonCommand extends SlackCommandHandler {
     const description = descriptionParts.join(' ');
 
     if (!this.isValidCommandFormat(userMention, amountStr, description)) {
-      return `Using: '/karma_${KarmaCommands.BurnAnon} @user amount description'`;
+      return this.i18n.t('karma.BurnAnonCommand.InvalidCommandMessage', {
+        args: {
+          command: KarmaCommands.BurnAnon,
+        },
+      });
     }
 
     const toUserId = this.extractUserId(userMention);
@@ -43,14 +47,14 @@ export class BurnKarmaAnonCommand extends SlackCommandHandler {
     description: string,
   ): Promise<string> {
     if (!this.isValidKarmaTransaction(fromUserId, toUserId, amount)) {
-      return this.getInvalidTransactionMessage(amount, true);
+      return this.getInvalidTransactionMessage(amount);
     }
 
     const fromUser = await this.karmaService.getUserKarma(fromUserId);
     const toUser = await this.karmaService.getUserKarma(toUserId);
 
     if (fromUser.balance * 2 < amount || toUser.balance < amount) {
-      return 'You or the specified user do not have enough karma to burn the specified amount.';
+      return this.i18n.t('karma.BurnAnonCommand.NotEnoughBalanceMessage');
     }
 
     await this.karmaService.addTransaction(
@@ -66,7 +70,19 @@ export class BurnKarmaAnonCommand extends SlackCommandHandler {
       description,
     );
 
-    return `You have burned ${amount * 2} karma from yourself and ${amount} from user <@${toUserId}>${description ? ` with the message: "${description}"` : ''}.`;
+    return this.i18n.t(
+      description
+        ? 'karma.BurnAnonCommand.SuccessMessageWithDescription'
+        : 'karma.BurnAnonCommand.SuccessMessage',
+      {
+        args: {
+          selfAmount: amount * 2,
+          amount,
+          user: toUserId,
+          description,
+        },
+      },
+    );
   }
 
   private isValidKarmaTransaction(
@@ -77,13 +93,10 @@ export class BurnKarmaAnonCommand extends SlackCommandHandler {
     return toUserId && toUserId !== fromUserId && !isNaN(amount) && amount > 0;
   }
 
-  private getInvalidTransactionMessage(
-    amount: number,
-    isBurn: boolean = false,
-  ): string {
+  private getInvalidTransactionMessage(amount: number): string {
     if (isNaN(amount) || amount <= 0) {
-      return `Please specify a valid amount of karma for ${isBurn ? 'burning' : 'transfer'}.`;
+      return this.i18n.t('karma.BurnAnonCommand.InvalidAmountMessage');
     }
-    return 'Invalid command format. Please check the specified user and amount.';
+    return this.i18n.t('karma.BurnAnonCommand.InvalidFormatMessage');
   }
 }

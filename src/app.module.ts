@@ -6,7 +6,13 @@ import { SlackService } from './services/slack.service';
 import { SchedulerService } from './services/scheduler.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { KarmaTransaction } from './entities/karma-transaction.entity';
-import { I18nModule } from 'nestjs-i18n';
+import {
+  AcceptLanguageResolver,
+  CookieResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
 import { join } from 'path';
 
 @Module({
@@ -18,11 +24,17 @@ import { join } from 'path';
       synchronize: true,
     }),
     I18nModule.forRoot({
-      fallbackLanguage: 'en',
+      fallbackLanguage: 'ru',
       loaderOptions: {
         path: join(__dirname, '/i18n/'),
         watch: true,
       },
+      resolvers: [
+        new QueryResolver(['lang', 'l']),
+        new HeaderResolver(['x-custom-lang']),
+        new CookieResolver(),
+        AcceptLanguageResolver,
+      ],
     }),
     TypeOrmModule.forFeature([Karma, KarmaTransaction]),
     ScheduleModule.forRoot(),

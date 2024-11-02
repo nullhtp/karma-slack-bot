@@ -25,7 +25,11 @@ export class GiveKarmaCommand extends SlackCommandHandler {
     const description = descriptionParts.join(' ');
 
     if (!this.isValidCommandFormat(userMention, amountStr)) {
-      return `Usage: '/karma_${KarmaCommands.Give} @user amount [description]'`;
+      return this.i18n.t('karma.GiveCommand.InvalidCommandMessage', {
+        args: {
+          command: KarmaCommands.Give,
+        },
+      });
     }
 
     const toUserId = this.extractUserId(userMention);
@@ -48,7 +52,7 @@ export class GiveKarmaCommand extends SlackCommandHandler {
     const toUser = await this.karmaService.getUserKarma(toUserId);
 
     if (fromUser.balance < amount) {
-      return 'You do not have enough karma to transfer the specified amount.';
+      return this.i18n.t('karma.GiveCommand.NotEnoughBalanceMessage');
     }
 
     // Recording transactions
@@ -65,7 +69,18 @@ export class GiveKarmaCommand extends SlackCommandHandler {
       description ?? '',
     );
 
-    return `You have transferred ${amount} karma to user <@${toUserId}>${description ? ` with message: "${description}"` : ''}.`;
+    return this.i18n.t(
+      description
+        ? 'karma.GiveCommand.SuccessMessageWithDescription'
+        : 'karma.GiveCommand.SuccessMessage',
+      {
+        args: {
+          amount,
+          description,
+          user: toUserId,
+        },
+      },
+    );
   }
 
   private isValidKarmaTransaction(
@@ -78,8 +93,8 @@ export class GiveKarmaCommand extends SlackCommandHandler {
 
   private getInvalidTransactionMessage(amount: number): string {
     if (isNaN(amount) || amount <= 0) {
-      return `Please specify a valid amount of karma to transfer.`;
+      return this.i18n.t('karma.GiveCommand.InvalidAmountMessage');
     }
-    return 'Invalid command format. Check the specified user and amount.';
+    return this.i18n.t('karma.GiveCommand.InvalidFormatMessage');
   }
 }

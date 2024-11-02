@@ -23,7 +23,14 @@ export class ReactionBurnHandler extends SlackHandler {
     if (!amount || amount >= 0) return;
 
     const messageText = await this.getMessageText(item);
-    const description = `For the message: "${messageText}"`;
+    const description: string = this.i18n.t(
+      'karma.BurnHandler.DescriptionMessage',
+      {
+        args: {
+          messageText,
+        },
+      },
+    );
 
     const fromUser = await this.karmaService.getUserKarma(user);
     const toUser = await this.karmaService.getUserKarma(item_user);
@@ -62,11 +69,17 @@ export class ReactionBurnHandler extends SlackHandler {
     itemUser: string,
     amount: number,
   ) {
-    await this.sendEphemeralMessage(
-      channel,
-      user,
-      `You burned ${amount} karma from user <@${itemUser}> and from yourself.`,
+    const message: string = await this.i18n.translate(
+      'karma.BurnHandler.SuccessfulMessage',
+      {
+        args: {
+          amount,
+          user: itemUser,
+        },
+      },
     );
+
+    await this.sendEphemeralMessage(channel, user, message);
   }
 
   private async notifyVictim(
@@ -75,11 +88,16 @@ export class ReactionBurnHandler extends SlackHandler {
     itemUser: string,
     amount: number,
   ) {
-    await this.sendEphemeralMessage(
-      channel,
-      itemUser,
-      `User <@${user}> burned ${amount} of your karma!`,
+    const message = await this.i18n.translate(
+      'karma.BurnHandler.ReceivedMessage',
+      {
+        args: {
+          amount,
+          user,
+        },
+      },
     );
+    await this.sendEphemeralMessage(channel, itemUser, message);
   }
 
   private async notifyInsufficientKarma(
@@ -88,10 +106,15 @@ export class ReactionBurnHandler extends SlackHandler {
     itemUser: string,
     amount: number,
   ) {
-    await this.sendEphemeralMessage(
-      channel,
-      user,
-      `User <@${itemUser}> does not have enough karma to burn ${amount} points.`,
+    const message = await this.i18n.translate(
+      'karma.BurnHandler.InsufficientMessage',
+      {
+        args: {
+          amount,
+          user: itemUser,
+        },
+      },
     );
+    await this.sendEphemeralMessage(channel, user, message);
   }
 }

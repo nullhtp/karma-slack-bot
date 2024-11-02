@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Karma } from '../entities/karma.entity';
 import { KarmaTransaction } from '../entities/karma-transaction.entity';
 import * as crypto from 'crypto';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class KarmaService {
@@ -77,7 +77,7 @@ export class KarmaService {
       userKarma,
       userKarma,
       1000,
-      this.i18n.t('karma.earnMonthlyKarma'),
+      this.i18n.t('karma.EarnMonthlyKarma'),
     );
   }
 

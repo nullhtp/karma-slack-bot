@@ -1,3 +1,71 @@
 {
-  "earnMonthlyKarma": "Earn monthly karma"
+  "EarnMonthlyKarma": "Earn monthly karma",
+
+  "GivenHandler": {
+    "DescriptionMessage": "For the message: \"{messageText}\"",
+    "SuccessfulMessage": "You have given {amount} karma to user <@{user}>.",
+    "ReceivedMessage": "User <@{user}> has given you {amount} karma!",
+    "InsufficientMessage": "You do not have enough karma to give {amount} points."
+  },
+
+  "BurnHandler": {
+    "DescriptionMessage": "For the message: \"{messageText}\"",
+    "SuccessfulMessage": "You burned {amount} karma from user <@{user}> and from yourself.",
+    "ReceivedMessage": "User <@{user}> burned {amount} of your karma!",
+    "InsufficientMessage": "User <@{user}> does not have enough karma to burn {amount} points."
+  },
+
+  "BurnAnonCommand": {
+    "InvalidCommandMessage": "Using: '/karma_{command} @user amount [description]'",
+    "InvalidFormatMessage": "Invalid command format. Check the specified user and amount.",
+    "NotEnoughBalanceMessage": "You or the specified user do not have enough karma to burn the specified amount.",
+    "InvalidAmountMessage": "Please specify a valid amount of karma for burning.",
+    "SuccessMessageWithDescription": "You have burned {selfAmount} karma from yourself and {amount} from user <@{user}> with the message: \"{description}\".",
+    "SuccessMessage": "You have burned {selfAmount} karma from yourself and {amount} from user <@{user}>."
+  },
+
+  "BurnCommand": {
+    "InvalidCommandMessage": "Using: '/karma_{command} @user amount [description]'",
+    "InvalidFormatMessage": "Invalid command format. Check the specified user and amount.",
+    "NotEnoughBalanceMessage": "You or the specified user do not have enough karma to burn the specified amount.",
+    "InvalidAmountMessage": "Please specify a valid amount of karma for burning.",
+    "SuccessMessageWithDescription": "You have burned {selfAmount} karma from yourself and {amount} from user <@{user}> with the message: \"{description}\".",
+    "SuccessMessage": "You have burned {selfAmount} karma from yourself and {amount} from user <@{user}>."
+  },
+
+  "CheckCommand": {
+    "SelfMessage": "Your current karma balance: {balance} points.",
+    "UserMessage": "Current karma balance of user <@{userId}>: {balance} points."
+  },
+
+  "GiveCommand": {
+    "InvalidCommandMessage": "Using: '/karma_{command} @user amount [description]'",
+    "InvalidFormatMessage": "Invalid command format. Check the specified user and amount.",
+    "NotEnoughBalanceMessage": "You do not have enough karma to transfer the specified amount.",
+    "InvalidAmountMessage": "Please specify a valid amount of karma to transfer.",
+    "SuccessMessageWithDescription": "You have transferred {amount} karma to user <@{user}> with message: \"{description}\"",
+    "SuccessMessage": "You have transferred {amount} karma to user <@{user}>"
+  },
+
+  "HelpCommand": {
+    "Message": " *Karma Bot Commands*:\n  1. `/karma [@user]` - Check your current karma balance.\n 2. `/karma_give @user amount [description]` - Transfer karma to another user with the option to specify the reason.\n  3. `/karma_burn @user amount [description]` - Burn karma from yourself and another user with the option to specify the reason.\n  4. `/karma_burn_anon @user amount description` - Burn karma from yourself (x2) and another user anonymously with specify the reason.\n  5. `/karma_history [@user]` - View the karma transaction history (last 10 entries). If @user is specified, shows that user's history.\n  6. `/karma_top` - View the leaderboard for the amount of karma.\n  7. `/karma_help` - Show all available commands and their descriptions.\n  8. `/karma_verify [@user]` - Verify the integrity of the karma history.\n\n  *Reactions and Karma Accumulation*:\n  - 🍀 (`:four_leaf_clover:`) - transfers 10 karma points.\n  - 💎 (`:gem:`) - transfers 100 karma points.\n  - 🌟 (`:star2:`) - transfers 300 karma points.\n\n  - 🧨 (`:firecracker:`) - burns 10 karma points from both of you.\n  - 💣 (`:bomb:`) - burns 100 karma points from both of you.\n  - 💥 (`:collision:`) - burns 300 karma points from both of you.\n\n  For example, to transfer karma, use: `/karma_give @username 50 For help with the project`."
+  },
+
+  "HistoryCommand": {
+    "SelfNoRecordsMessage": "You have no records in your karma history.",
+    "UserNoRecordsMessage": "User <@{userId}> has no records in their karma history.",
+    "SelfMessage": "Your latest karma transactions:",
+    "UserMessage": "Latest karma transactions of user <@{userId}>:"
+  },
+
+  "TopCommand": {
+    "ItemMessage": "{index}. <@{userId}> – {balance} points",
+    "ListMessage": "*Top users by karma:* \n {topList}",
+    "SelfRankMessage": "\n\nYour rank in the leaderboard: {userRank}"
+  },
+
+  "VerifyCommand": {
+    "ValidMessage": "✅ {userMention} karma history is in order. All transactions are correct and have not been altered.",
+    "InvalidMessage": "⚠️ Integrity violation detected in {userMention} karma history. Please contact the administrator for further investigation."
+  }
 }

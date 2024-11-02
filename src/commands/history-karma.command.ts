@@ -16,15 +16,29 @@ export class KarmaHistoryCommand extends SlackCommandHandler {
     const transactions = await this.karmaService.getUserTransactions(userId);
 
     if (transactions.length === 0) {
-      return isSelf
-        ? 'You have no records in your karma history.'
-        : `User <@${userId}> has no records in their karma history.`;
+      return this.i18n.t(
+        isSelf
+          ? 'karma.HistoryCommand.SelfNoRecordsMessage'
+          : 'karma.HistoryCommand.UserNoRecordsMessage',
+        {
+          args: {
+            userId,
+          },
+        },
+      );
     }
 
     const history = this.formatTransactionHistory(transactions);
-    const prefix = isSelf
-      ? 'Your latest karma transactions:'
-      : `Latest karma transactions of user <@${userId}>:`;
+    const prefix = this.i18n.t(
+      isSelf
+        ? 'karma.HistoryCommand.SelfMessage'
+        : 'karma.HistoryCommand.UserMessage',
+      {
+        args: {
+          userId,
+        },
+      },
+    );
 
     return `*${prefix}*\n${history}`;
   }

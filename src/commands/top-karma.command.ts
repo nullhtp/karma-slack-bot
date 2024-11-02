@@ -15,13 +15,21 @@ export class TopKarmaCommand extends SlackCommandHandler {
     const userRank = await this.karmaService.getUserRank(currentUserId);
 
     const topList = leaderboard
-      .map((k, i) => `${i + 1}. <@${k.userId}> – ${k.balance} points`)
+      .map((k, i) =>
+        this.i18n.t('karma.TopCommand.ItemMessage', {
+          args: { index: i + 1, userId: k.userId, balance: k.balance },
+        }),
+      )
       .join('\n');
 
-    let response = `*Top users by karma:*\n${topList}`;
+    let response: string = this.i18n.t('karma.TopCommand.ListMessage', {
+      args: { topList },
+    });
 
     if (userRank) {
-      response += `\n\nYour rank in the leaderboard: ${userRank}`;
+      response += this.i18n.t('karma.TopCommand.SelfRankMessage', {
+        args: { userRank },
+      });
     }
 
     return response;

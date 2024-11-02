@@ -1,12 +1,14 @@
 import { App } from '@slack/bolt';
 import { KarmaService } from '../services/karma.service';
 import { WebClient } from '@slack/web-api';
+import { I18nService } from 'nestjs-i18n';
 
 export abstract class SlackHandler {
   constructor(
     protected app: App,
     protected karmaService: KarmaService,
     protected client: WebClient,
+    protected i18n: I18nService,
   ) {}
 
   abstract register(): void;
