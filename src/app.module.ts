@@ -24,7 +24,7 @@ import { join } from 'path';
       synchronize: true,
     }),
     I18nModule.forRoot({
-      fallbackLanguage: 'ru',
+      fallbackLanguage: 'en',
       loaderOptions: {
         path: join(__dirname, '/i18n/'),
         watch: true,
