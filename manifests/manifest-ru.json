@@ -55,7 +55,7 @@
         "command": "/karma_burn_anon",
         "description": "Сжеч карму анонимно у себя и у другого пользователя",
         "usage_hint": "@user amount [описание]",
-        "should_escape": false
+        "should_escape": true
       }
     ]
   },

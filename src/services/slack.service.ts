@@ -10,6 +10,7 @@ import { HelpKarmaCommand } from '../commands/help-karma.command';
 import { TopKarmaCommand } from '../commands/top-karma.command';
 import { BurnKarmaCommand } from '../commands/burn-karma.command';
 import { SlackCommandHandler } from '../commands/slack.command';
+import { BurnKarmaAnonCommand } from '../commands/burn-karma-anon.command ';
 import { TeamJoinHandler } from '../handlers/team-join.handler';
 import { ReactionGivenHandler } from '../handlers/reaction-added.handler';
 import { ReactionBurnHandler } from '../handlers/reaction-burn.handler';
@@ -107,6 +108,9 @@ export class SlackService implements OnModuleInit {
     this.registerCommand(new HelpKarmaCommand(this.i18n));
     this.registerCommand(new TopKarmaCommand(this.i18n, this.karmaService));
     this.registerCommand(new BurnKarmaCommand(this.i18n, this.karmaService));
+    this.registerCommand(
+      new BurnKarmaAnonCommand(this.i18n, this.karmaService),
+    );
   }
 
   private registerCommand(handler: SlackCommandHandler) {

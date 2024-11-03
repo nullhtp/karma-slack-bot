@@ -55,7 +55,7 @@
         "command": "/karma_burn_anon",
         "description": "Anonymously burn karma from yourself and another user",
         "usage_hint": "@user amount [description]",
-        "should_escape": false
+        "should_escape": true
       }
     ]
   },
