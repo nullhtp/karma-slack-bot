@@ -16,7 +16,7 @@
   },
 
   "BurnAnonCommand": {
-    "InvalidCommandMessage": "Using: '/karma_{command} @user amount [description]'",
+    "InvalidCommandMessage": "Using: '/karma_{command} @user amount description'",
     "InvalidFormatMessage": "Invalid command format. Check the specified user and amount.",
     "NotEnoughBalanceMessage": "You or the specified user do not have enough karma to burn the specified amount.",
     "InvalidAmountMessage": "Please specify a valid amount of karma for burning.",

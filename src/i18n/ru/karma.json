@@ -16,7 +16,7 @@
   },
 
   "BurnAnonCommand": {
-    "InvalidCommandMessage": "Использование: '/karma_{command} @user количество [описание]'",
+    "InvalidCommandMessage": "Использование: '/karma_{command} @user количество описание'",
     "InvalidFormatMessage": "Неверный формат команды. Проверьте указанного пользователя и количество.",
     "NotEnoughBalanceMessage": "У вас или у указанного пользователя недостаточно кармы, чтобы сжечь указанное количество.",
     "InvalidAmountMessage": "Пожалуйста, укажите корректное количество кармы для сжигания.",
